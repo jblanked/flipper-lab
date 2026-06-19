@@ -1,0 +1,85 @@
+{% extends "main.html" %}
+{% load static %}
+
+{% block title %}{{ active_category.name }} Apps - Flipper Lab{% endblock %}
+
+{% block content %}
+<!-- Top Banner -->
+<div class="top-banner">
+  <h1 class="page-title">{{ active_category.name }} Apps</h1>
+  <div class="search-wrapper">
+    <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4-4"/></svg>
+    <input type="text" placeholder="Search" id="appSearch" oninput="filterApps(this.value)">
+  </div>
+  <div class="nav-links">
+    <a href="https://github.com/flipperdevices/flipper-application-catalog" target="_blank" rel="noopener">
+      Contribute
+    </a>
+  </div>
+</div>
+
+<!-- Filter Pills -->
+<div class="filter-pills">
+  <a href="{% url 'apps' %}" class="filter-pill">All apps</a>
+  {% for cat in categories %}
+  <a href="{% url 'apps_by_category' category_name=cat.name|lower %}" class="filter-pill {% if active_category and active_category.id == cat.id %}active{% endif %}">
+    {{ cat.name }}
+  </a>
+  {% endfor %}
+</div>
+
+<!-- Content Area -->
+<div class="content-area">
+  <div class="app-grid-section">
+    {% if apps %}
+    <div class="app-grid" id="appGrid">
+      {% for app in apps %}
+      <a href="{% url 'app' fap_id=app.fap_id %}" class="app-card" data-name="{{ app.name|lower }}">
+        <div class="card-screenshot">
+          {% with screenshot=app.screenshots|first %}
+          {% if screenshot %}
+          <img src="{{ screenshot }}" alt="{{ app.name }} screenshot" loading="lazy">
+          {% else %}
+          <div style="color:#999;font-size:40px;">[IMG]</div>
+          {% endif %}
+          {% endwith %}
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-title">{{ app.name }}</div>
+          </div>
+          <div class="card-category">{{ app.category.name }}</div>
+          <div class="card-description">{{ app.short_description }}</div>
+          <div class="card-actions">
+            <button class="btn btn-primary btn-small" onclick="event.stopPropagation();window.location.href='{% url 'app' fap_id=app.fap_id %}'">INSTALL</button>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="padding: 40px; text-align: center; color: var(--text-secondary);">
+      <p style="font-size: 18px;">No apps found</p>
+      <p style="margin-top: 8px;">There are no apps in the "{{ active_category.name }}" category yet.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function filterApps(query) {
+  const cards = document.querySelectorAll('.app-card');
+  const q = query.toLowerCase().trim();
+  cards.forEach(card => {
+    const name = card.dataset.name || '';
+    if (!q || name.includes(q)) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+</script>
+{% endblock %}

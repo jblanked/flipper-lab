@@ -1,0 +1,85 @@
+{% extends "main.html" %}
+{% load static %}
+
+{% block title %}{{ app.name }} - Flipper Lab{% endblock %}
+
+{% block content %}
+<!-- Top Banner -->
+<div class="top-banner">
+  <a href="{% url 'apps' %}" class="btn btn-flat" style="padding-left:0;">Back to Apps</a>
+  <div class="search-wrapper">
+    <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4-4"/></svg>
+    <input type="text" placeholder="Search" id="appSearch" oninput="filterApps(this.value)">
+  </div>
+  <div class="nav-links">
+    <a href="https://github.com/flipperdevices/flipper-application-catalog" target="_blank" rel="noopener">
+      Contribute
+    </a>
+  </div>
+</div>
+
+<!-- App Detail -->
+<div class="app-detail">
+  {% if app.screenshots %}
+  <div class="app-detail-section">
+    <div class="app-detail-screenshots">
+      {% for screenshot in app.screenshots %}
+      <img src="{{ screenshot }}" alt="{{ app.name }} screenshot {{ forloop.counter }}" loading="lazy">
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  <div class="app-detail-header">
+    <div class="app-detail-info">
+      <h1>{{ app.name }}</h1>
+      <div class="app-detail-meta">
+        <span class="meta-item">
+          <span class="meta-label">Version:</span> {{ app.version }}
+        </span>
+        <span class="meta-item">
+          <span class="meta-label">Author:</span> {{ app.author }}
+        </span>
+        <span class="meta-item">
+          <span class="meta-label">Category:</span>
+          <a href="{% url 'apps_by_category' category_name=app.category.name|lower %}" style="color:var(--q-primary);">{{ app.category.name }}</a>
+        </span>
+      </div>
+      <p style="font-size:15px;color:var(--text-secondary);line-height:1.5;">{{ app.short_description }}</p>
+      <div class="app-detail-actions">
+        <form action="{% url 'upload_app' fap_id=app.fap_id %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary">INSTALL</button>
+        </form>
+        {% if app.location_origin %}
+        <a href="{{ app.location_origin }}" target="_blank" rel="noopener" class="btn btn-flat">View Source</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% if app.description %}
+  <div class="app-detail-section">
+    <h2>Description</h2>
+    <p>{{ app.description_html|safe }}</p>
+  </div>
+  {% endif %}
+
+  {% if app.changelog %}
+  <div class="app-detail-section">
+    <h2>Changelog</h2>
+    <p>{{ app.changelog_html|safe }}</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function filterApps(query) {
+  const q = query.toLowerCase().trim();
+  if (q) {
+    window.location.href = "{% url 'apps' %}?q=" + encodeURIComponent(q);
+  }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "main.html" %}
+{% load static %}
+
+{% block title %}Flipper Lab - Home{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+  <h1>Flipper Lab</h1>
+  <p class="hero-subtitle">
+    Discover and install apps for your Flipper Zero. Browse the catalog, find new tools, and enhance your device.
+  </p>
+  <div class="hero-cta">
+    <a href="{% url 'apps' %}" class="btn btn-primary">Browse Apps</a>
+    <a href="https://github.com/flipperdevices/flipper-application-catalog" target="_blank" rel="noopener" class="btn btn-flat">Contribute on GitHub</a>
+  </div>
+  <div class="stats-row">
+    <div class="stat-item">
+      <span class="stat-value">{{ total_apps }}</span>
+      <span class="stat-label">Total Apps</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">{{ total_categories }}</span>
+      <span class="stat-label">Categories</span>
+    </div>
+  </div>
+</div>
+
+{% if featured_apps %}
+<div class="featured-section">
+  <h2>Featured Apps</h2>
+  <div class="app-grid">
+    {% for app in featured_apps %}
+    <a href="{% url 'app' fap_id=app.fap_id %}" class="app-card">
+      <div class="card-screenshot">
+        {% with screenshot=app.screenshots|first %}
+        {% if screenshot %}
+        <img src="{{ screenshot }}" alt="{{ app.name }} screenshot" loading="lazy">
+        {% else %}
+        <div style="color:#999;font-size:40px;">[IMG]</div>
+        {% endif %}
+        {% endwith %}
+      </div>
+      <div class="card-body">
+        <div class="card-header">
+          <div class="card-title">{{ app.name }}</div>
+        </div>
+        <div class="card-category">{{ app.category.name }}</div>
+        <div class="card-description">{{ app.short_description }}</div>
+        <div class="card-actions">
+          <button class="btn btn-primary btn-small" onclick="event.stopPropagation();window.location.href='{% url 'app' fap_id=app.fap_id %}'">INSTALL</button>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

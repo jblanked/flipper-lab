@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Flipper Lab{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/lab.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <a href="{% url 'home' %}" class="sidebar-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="6" fill="#ff8200"/>
+          <path d="M8 10h4v12H8zM14 10h4v12h-4zM20 10h4v12h-4z" fill="white"/>
+        </svg>
+        <span>Flipper Lab</span>
+      </a>
+      <nav class="sidebar-nav">
+        <a href="{% url 'home' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l7-7 7 7v8a1 1 0 01-1 1H4a1 1 0 01-1-1V9z"/></svg>
+          Home
+        </a>
+        <a href="{% url 'apps' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'apps' or request.resolver_match.url_name == 'apps_by_category' or request.resolver_match.url_name == 'app' %}active{% endif %}">
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h14v14H3zM3 7h14M10 3v14"/></svg>
+          Apps
+        </a>
+        <div class="sidebar-separator"></div>
+        <a href="https://github.com/flipperdevices/flipper-application-catalog" target="_blank" rel="noopener" class="sidebar-nav-item">
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 3a2 2 0 010 4l-9 9-4 1 1-4 9-9z"/></svg>
+          Contribute
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>
