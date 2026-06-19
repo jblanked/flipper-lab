@@ -1,6 +1,10 @@
+import sys
 import importlib.util
 from pathlib import Path
 from .models import App, Firmware
+
+_flipper_app_dir = Path(__file__).resolve().parent.parent / "flipperzero-ufbt-app"
+sys.path.insert(0, str(_flipper_app_dir))
 
 def build(app_id: int, firmware_id: int, branch: str = "main") -> str:
     """Build an app by its id and returns the path to the built .fap file"""
@@ -12,10 +16,11 @@ def build(app_id: int, firmware_id: int, branch: str = "main") -> str:
         raise ValueError(f'Firmware with id {firmware_id} not found')
     
     _spec = importlib.util.spec_from_file_location(
-        "main", Path(__file__).resolve().parent.parent / "flipperzero-ufbt-app" / "main.py"
+        "main", _flipper_app_dir / "main.py"
     )
     _main = importlib.util.module_from_spec(_spec)
     _spec.loader.exec_module(_main)
+    
     _map = {
         "official": _main.FIRMWARE_OFFICIAL,
         "momentum": _main.FIRMWARE_MOMENTUM,
