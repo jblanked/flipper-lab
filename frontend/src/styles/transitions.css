@@ -1,0 +1,24 @@
+@keyframes vt-fade-in {
+  from { opacity: 0; }
+}
+@keyframes vt-fade-out {
+  to { opacity: 0; }
+}
+@keyframes vt-slide-in {
+  from { transform: translateY(8px); }
+}
+
+::view-transition-old(root) {
+  animation: vt-fade-out 0.15s ease both;
+}
+::view-transition-new(root) {
+  animation: vt-fade-in 0.2s ease both, vt-slide-in 0.2s ease both;
+}
+
+::view-transition-group(banner) { animation: none; }
+::view-transition-old(banner)   { animation: none; opacity: 0; }
+::view-transition-new(banner)   { animation: none; opacity: 1; }
+
+::view-transition-group(app-grid-static) { animation: none; }
+::view-transition-old(app-grid-static) { animation: none; opacity: 0; }
+::view-transition-new(app-grid-static) { animation: none; opacity: 1; }

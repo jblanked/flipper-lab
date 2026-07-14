@@ -1,0 +1,13 @@
+/* Import order matters: base first (vars/reset/fonts), then layout,
+   then components, responsive last so its overrides win. */
+@import './styles/base.css';
+@import './styles/layout.css';
+@import './styles/search.css';
+@import './styles/buttons.css';
+@import './styles/cards.css';
+@import './styles/app-detail.css';
+@import './styles/device.css';
+@import './styles/modal.css';
+@import './styles/home.css';
+@import './styles/responsive.css';
+@import './styles/transitions.css';

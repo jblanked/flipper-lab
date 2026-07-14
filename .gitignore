@@ -1,6 +1,30 @@
+# Python / Django (backend)
+__pycache__/
+*.pyc
+.venv/
 venv/
-__pycache__
 .secret_key
 db.sqlite3
-api/migrations/
-home/migrations/
+media/
+
+# Build artifacts (downloaded repos + compiled .faps)
+build_workspace/
+
+# Migrations (regenerated locally)
+backend/*/migrations/*.py
+!backend/*/migrations/__init__.py
+
+# Generated protobuf bundle + its cache (frontend)
+.protobuf-cache/
+frontend/src/lib/flipper/protobufCompiled.js
+
+# Node / SvelteKit (frontend)
+node_modules/
+frontend/.svelte-kit/
+frontend/build/
+.env
+*.env
+
+# Editor / OS
+.DS_Store
+*.swp
