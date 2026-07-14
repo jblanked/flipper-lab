@@ -102,8 +102,7 @@ Run these from the `backend/` directory with the virtual environment active.
 ```
 
    This kicks off a background task that fetches the latest app data. It can take
-   a while (it sleeps a few seconds between apps to respect GitHub API rate
-   limits). Stop an in-progress sync with:
+   about 2 minutes. Stop an in-progress sync with:
 
 ```
    http://127.0.0.1:8000/api/sync/stop/
