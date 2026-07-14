@@ -25,7 +25,7 @@ The project is split into two parts plus a vendored build tool:
 ## Installation
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/flipper-lab.git
+git clone https://github.com/jblanked/flipper-lab.git
 cd flipper-lab
 ```
 
