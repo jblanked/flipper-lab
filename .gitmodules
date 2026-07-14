@@ -1,3 +1,6 @@
 [submodule "flipperzero-ufbt-app"]
 	path = flipperzero-ufbt-app
 	url = https://github.com/jblanked/flipperzero-ufbt-app.git
+[submodule "flipper-application-catalog"]
+	path = flipper-application-catalog
+	url = https://github.com/flipperdevices/flipper-application-catalog.git
