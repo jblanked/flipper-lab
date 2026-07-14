@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
+
+@font-face {
+    font-family: 'Born2bSportyV2';
+    src:
+        local('Born2bSportyV2'),
+        url('/fonts/Born2bSportyV2.ttf') format('truetype');
+    font-display: swap;
+}
+
+:root {
+    --q-primary: #ff8200;
+    --q-secondary: #26a69a;
+    --q-accent: #589dff;
+    --q-positive: #00c853;
+    --q-negative: #f05145;
+    --q-info: #31ccec;
+    --q-warning: #f2c037;
+    --q-dark: #010101;
+    --q-dark-page: #121212;
+    --sidebar-bg: #f5f5f5;
+    --card-border: #dbdbdb;
+    --text-primary: #000000;
+    --text-secondary: #666666;
+    --separator: rgba(0, 0, 0, 0.12);
+    --topbar-height: 62px;
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #ffffff;
+    color: var(--text-primary);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+
+/* Icon mask utility (recolors + resizes a mask SVG via currentColor) */
+.icon {
+    display: inline-block;
+    width: var(--icon-size, 20px);
+    height: var(--icon-size, 20px);
+    flex-shrink: 0;
+    background-color: currentColor;
+    -webkit-mask: var(--icon) no-repeat center / contain;
+    mask: var(--icon) no-repeat center / contain;
+    image-rendering: pixelated;
+}
+
+.text-pixelated {
+    font-family: 'Born2bSportyV2', sans-serif;
+    letter-spacing: 0.035em;
+}

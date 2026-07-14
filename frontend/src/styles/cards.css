@@ -1,0 +1,120 @@
+/* App grid */
+.app-grid-section {
+    flex: 1;
+    padding: 16px 32px 32px 16px;
+}
+
+.app-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+    gap: 4px 24px;
+    justify-items: center;
+}
+
+/* App card */
+.app-card {
+    width: 268px;
+    border-radius: 14px;
+    padding: 12px;
+    transition: box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.app-card:hover {
+    box-shadow:
+        0 1px 11px rgba(0, 0, 0, 0.13),
+        0 3px 6px rgba(0, 0, 0, 0.05),
+        0 3px 6px -2px rgba(0, 0, 0, 0.08);
+}
+
+.app-card .card-screenshot {
+    width: 100%;
+    height: 128px;
+    border: 2px solid #000;
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.app-card .card-screenshot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    image-rendering: pixelated;
+}
+
+.app-card .card-body {
+    padding: 8px 0 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto 1fr;
+    column-gap: 8px;
+    align-items: start;
+}
+
+.app-card .card-title {
+    grid-column: 1;
+    grid-row: 1;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+    margin-bottom: 4px;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    align-self: center;
+}
+
+.app-card .card-category {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 14px;
+    white-space: nowrap;
+    font-size: 14px;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.app-card .cat-icon {
+    width: 14px;
+    height: 14px;
+    image-rendering: pixelated;
+}
+
+.app-card .card-description {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.app-card .card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    justify-self: end;
+    margin-top: 8px;
+}
+
+.card-actions .btn-primary {
+    width: 80px;
+    min-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+}

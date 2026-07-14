@@ -1,0 +1,80 @@
+.app-detail {
+    flex: 1;
+    padding: 24px 32px 32px;
+    max-width: 900px;
+}
+
+.app-detail-header {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.app-detail-info {
+    flex: 1;
+}
+
+.app-detail-info h1 {
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.app-detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.app-detail-meta .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.app-detail-meta .meta-label {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.app-detail-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.app-detail-section {
+    margin-bottom: 28px;
+}
+
+.app-detail-section h2 {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--separator);
+}
+
+.app-detail-section p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.app-detail-screenshots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.app-detail-screenshots img {
+    width: 100%;
+    border: 2px solid #000;
+    border-radius: 8px;
+    image-rendering: pixelated;
+}
