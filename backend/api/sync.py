@@ -1,6 +1,6 @@
+import os
 import re
 import threading
-import time
 from typing import Optional
 
 import requests
@@ -9,10 +9,11 @@ from django.utils import timezone
 
 from home.models import App, Category, SyncRun
 
-_branch_cache: dict[str, str] = {}
 _cancel_events: dict[int, threading.Event] = {}
 
-GITHUB_API = "https://api.github.com"
+CATALOG_ROOT = os.path.normpath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "flipper-application-catalog")
+)
 GITHUB_RAW = "https://raw.githubusercontent.com"
 
 _RED = "\033[91m"
@@ -22,9 +23,9 @@ _GRAY = "\033[90m"
 _RESET = "\033[0m"
 
 
-def __get_app_id_from_url(url: str) -> str:
-    """Extracts the app ID from a catalog URL."""
-    return url.split("/")[-2]
+def __get_app_id_from_path(path: str) -> str:
+    """Extracts the app ID from a manifest file path."""
+    return os.path.basename(os.path.dirname(path))
 
 
 def __parse_github_repo(repo_url: str) -> Optional[tuple[str, str]]:
@@ -68,51 +69,36 @@ def __build_raw_url(owner: str, repo: str, commit_sha: str, file_path: str) -> s
     return f"{GITHUB_RAW}/{owner}/{repo}/{commit_sha}/{file_path}"
 
 
-def __get_default_branch(owner: str, repo: str) -> str:
-    """Fetches the default branch from GitHub API, cached by owner/repo."""
-    key = f"{owner}/{repo}"
-    if key in _branch_cache:
-        return _branch_cache[key]
+
+
+
+def fetch_manifests() -> dict[str, list[str]]:
+    """Finds all manifest.yml files in the local catalog submodule, grouped by category."""
+    apps_root = os.path.join(CATALOG_ROOT, "applications")
+    categories: dict[str, list[str]] = {}
     try:
-        url = f"{GITHUB_API}/repos/{owner}/{repo}"
-        resp = requests.get(url, timeout=10)
-        resp.raise_for_status()
-        branch = resp.json().get("default_branch", "main")
-        _branch_cache[key] = branch
-        return branch
-    except Exception as e:
-        print(f"{_YELLOW}  Warning: Could not fetch default branch for {key}: {e}{_RESET}")
-        return "main"
+        category_names = sorted(os.listdir(apps_root))
+    except FileNotFoundError:
+        print(f"{_RED}Catalog directory not found: {apps_root}{_RESET}")
+        return categories
 
-
-def fetch_manifests() -> dict:
-    """Fetches all manifest URLs from the Flipper catalog, grouped by category."""
-    url = f"{GITHUB_API}/repos/flipperdevices/flipper-application-catalog/git/trees/main?recursive=1"
-    response = requests.get(url, timeout=10)
-    response.raise_for_status()
-    data = response.json()
-    all_apps = [
-        item["path"]
-        for item in data["tree"]
-        if item["path"].startswith("applications/")
-        and item["path"].endswith("manifest.yml")
-    ]
-    categories = {}
-    for app in all_apps:
-        category = app.split("/")[1]
-        if category not in categories:
-            categories[category] = []
-        categories[category].append(
-            f"https://raw.githubusercontent.com/flipperdevices/flipper-application-catalog/main/{app}"
-        )
+    for category_name in category_names:
+        category_path = os.path.join(apps_root, category_name)
+        if not os.path.isdir(category_path):
+            continue
+        manifests = []
+        for root, _dirs, files in os.walk(category_path):
+            if "manifest.yml" in files:
+                manifests.append(os.path.join(root, "manifest.yml"))
+        if manifests:
+            categories[category_name] = manifests
     return categories
 
 
-def load_manifest(url: str) -> dict:
-    """Loads and parses a YAML manifest from a URL."""
-    response = requests.get(url, timeout=10)
-    response.raise_for_status()
-    return yaml.safe_load(response.text)
+def load_manifest(file_path: str) -> dict:
+    """Loads and parses a YAML manifest from a local file."""
+    with open(file_path, "r") as f:
+        return yaml.safe_load(f)
 
 def stop_sync() -> bool:
     """Request cancellation of any currently running sync.
@@ -197,7 +183,7 @@ def sync_manifest(cancel_event: threading.Event | None = None) -> tuple[bool, in
     If *cancel_event* is provided and becomes set, the sync is aborted early.
     """
     try:
-        app_manifests: dict = fetch_manifests()
+        app_manifests: dict[str, list[str]] = fetch_manifests()
     except Exception as e:
         print(f"{_RED}Error fetching manifests: {e}{_RESET}")
         return False, 0
@@ -207,29 +193,28 @@ def sync_manifest(cancel_event: threading.Event | None = None) -> tuple[bool, in
     if cancel_event and cancel_event.is_set():
         print(f"{_BLUE}Sync cancelled before processing started{_RESET}")
         return False, 0
-    for category_name, manifest_urls in app_manifests.items():
+    for category_name, manifest_paths in app_manifests.items():
         if cancel_event and cancel_event.is_set():
             print(f"{_BLUE}Sync cancelled mid-flight{_RESET}")
             return False, 0
         category, _ = Category.objects.get_or_create(name=category_name)
-        for manifest_url in manifest_urls:
+        for manifest_path in manifest_paths:
             if cancel_event and cancel_event.is_set():
                 print(f"{_BLUE}Sync cancelled mid-flight{_RESET}")
                 return False, 0
-            time.sleep(3)  # Sleep to avoid hitting GitHub rate limits
             try:
-                manifest_data = load_manifest(manifest_url)
-                app_id = manifest_data.get("id", __get_app_id_from_url(manifest_url))
+                manifest_data = load_manifest(manifest_path)
+                app_id = manifest_data.get("id", __get_app_id_from_path(manifest_path))
                 if not app_id:
-                    print(f"{_YELLOW}Manifest at {manifest_url} is missing 'id' field, skipping.{_RESET}")
+                    print(f"{_YELLOW}Manifest at {manifest_path} is missing 'id' field, skipping.{_RESET}")
                     continue
                 sourcecode_key = manifest_data.get("sourcecode")
                 if not sourcecode_key:
-                    print(f"{_YELLOW}Manifest at {manifest_url} is missing 'sourcecode' field, skipping.{_RESET}")
+                    print(f"{_YELLOW}Manifest at {manifest_path} is missing 'sourcecode' field, skipping.{_RESET}")
                     continue
                 repo_url = sourcecode_key.get("location", {}).get("origin")
                 if not repo_url:
-                    print(f"{_YELLOW}Manifest at {manifest_url} is missing 'location.origin' field, skipping.{_RESET}")
+                    print(f"{_YELLOW}Manifest at {manifest_path} is missing 'location.origin' field, skipping.{_RESET}")
                     continue
                 commit_sha = sourcecode_key.get("location", {}).get("commit_sha")
                 subdir = sourcecode_key.get("location", {}).get("subdir")
@@ -238,7 +223,7 @@ def sync_manifest(cancel_event: threading.Event | None = None) -> tuple[bool, in
                 owner = repo_info[0] if repo_info else None
                 repo = repo_info[1] if repo_info else None
 
-                branch = __get_default_branch(owner, repo) if owner and repo else "main"
+                branch = "main"
 
                 # Process changelog
                 changelog = manifest_data.get("changelog", "")
@@ -302,5 +287,5 @@ def sync_manifest(cancel_event: threading.Event | None = None) -> tuple[bool, in
                 else:
                     print(f"{_GRAY}Updated existing app: {app.name} (ID: {app.id}){_RESET}")
             except Exception as e:
-                print(f"{_RED}Error processing manifest at {manifest_url}: {e}{_RESET}")
+                print(f"{_RED}Error processing manifest at {manifest_path}: {e}{_RESET}")
     return True, len(app_manifests)
