@@ -65,6 +65,11 @@ pip install -r requirements.txt
    cd ..
 ```
 
+6. Copy the `.env.example` file to `.env` and edit it if you want to change the default settings (e.g. the backend URL):
+```bash
+cp frontend/.env.example frontend/.env
+```
+
 Protobuf definitions for Flipper RPC are generated automatically before
 `dev`/`build` (via the `predev`/`build` npm scripts), so no extra step is
 needed.
